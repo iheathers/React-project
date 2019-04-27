@@ -87,6 +87,10 @@ class BurgerBuilder extends Component{
     orderCancelledHandler = () => {
         this.setState({ordered: false})
     }
+
+    orderContineHandler = () => {
+        alert("You Continued!");
+    }
   
 
 
@@ -109,7 +113,12 @@ class BurgerBuilder extends Component{
                 {/* console.log(this.state.purchasable) */}
 
                 <Modal show={this.state.ordered} cancel={this.orderCancelledHandler}>
-                   <OrderSummary ingredients={this.state.ingredients}/> 
+                   <OrderSummary 
+                        ingredients={this.state.ingredients}
+                        orderContinued={this.orderContineHandler}
+                        orderCancelled={this.orderCancelledHandler}
+
+                   /> 
                 </Modal>
                 <BuildControls 
                     addIngredient={this.addIngredientHandler}
