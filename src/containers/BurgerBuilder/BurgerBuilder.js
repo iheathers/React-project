@@ -84,6 +84,9 @@ class BurgerBuilder extends Component{
         this.updatePurchaseState(updatedIngredients);
     }
 
+    orderCancelledHandler = () => {
+        this.setState({ordered: false})
+    }
   
 
 
@@ -105,7 +108,7 @@ class BurgerBuilder extends Component{
                 <Burger ingredients={this.state.ingredients} />
                 {/* console.log(this.state.purchasable) */}
 
-                <Modal show={this.state.ordered}>
+                <Modal show={this.state.ordered} cancel={this.orderCancelledHandler}>
                    <OrderSummary ingredients={this.state.ingredients}/> 
                 </Modal>
                 <BuildControls 
