@@ -5,6 +5,8 @@ import OrderSummary from '../OrderSummary/OrderSummary'
 import Modal from '../../components/UI/Modal/Modal';
 
 import axios from '../../axios-orders';
+import Spinner from '../../components/UI/Spinner/Spinner';
+
 
 const INGREDIENTS_PRICE = {
     meat: 1.5,
@@ -26,7 +28,8 @@ class BurgerBuilder extends Component{
         },
         totalPrice: 5,
         purchasable: false,
-        ordered: false
+        ordered: false,
+        loading: false
     }
 
     orderHandler = () => {
@@ -91,6 +94,7 @@ class BurgerBuilder extends Component{
     }
 
     orderContineHandler = () => {
+        this.setState({loading: true})
         const orders = {
             ingredients: this.state.ingredients,
             price: this.state.totalPrice,
@@ -104,8 +108,12 @@ class BurgerBuilder extends Component{
             }
         }
         axios.post('/orders.json',orders)
-        .then(response => console.log(response))
-        .catch(error => console.log(error))
+        .then(response => 
+            this.setState({loading: false, ordered: false})
+            )
+        .catch(error => 
+            this.setState({loading: false, ordered: false})
+            )
     }
   
 
@@ -119,23 +127,26 @@ class BurgerBuilder extends Component{
             disabledInfo[key] = disabledInfo[key] <= 0;
         }
 
+        let orderSummary =  <OrderSummary 
+                ingredients={this.state.ingredients}
+                price={this.state.totalPrice}
+                orderContinued={this.orderContineHandler}
+                orderCancelled={this.orderCancelledHandler}
+            /> ;
+
+        if (this.state.loading){
+            orderSummary = <Spinner/>
+        }
+
         //console.log(disabledInfo);
 
-        return (
-
-            
+        return (            
             <>
                 <Burger ingredients={this.state.ingredients} />
                 {/* console.log(this.state.purchasable) */}
 
                 <Modal show={this.state.ordered} cancel={this.orderCancelledHandler}>
-                   <OrderSummary 
-                        ingredients={this.state.ingredients}
-                        price={this.state.totalPrice}
-                        orderContinued={this.orderContineHandler}
-                        orderCancelled={this.orderCancelledHandler}
-
-                   /> 
+                    {orderSummary}
                 </Modal>
                 <BuildControls 
                     addIngredient={this.addIngredientHandler}
