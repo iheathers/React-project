@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Burger from '../../components/Burger/Burger';
 import BuildControls from '../../components/Burger/BuildControls/BuildControls';
-import OrderSummary from '../OrderSummary/OrderSummary'
+import OrderSummary from '../../components/Burger/OrderSummary/OrderSummary';
 import Modal from '../../components/UI/Modal/Modal';
 
 import axios from '../../axios-orders';
@@ -28,9 +28,10 @@ class BurgerBuilder extends Component{
     }
 
     componentDidMount(){
+        console.log(this.props);
         axios.get('https://react-burger-builder-3de3e.firebaseio.com/ingredients.json')
         .then(response => { 
-            console.log(response);
+            //console.log(response);
             this.setState({ingredients: response.data })
         })
         .catch(error => {
@@ -100,26 +101,19 @@ class BurgerBuilder extends Component{
     }
 
     orderContineHandler = () => {
-        this.setState({loading: true})
-        const orders = {
-            ingredients: this.state.ingredients,
-            price: this.state.totalPrice,
-            customer: {
-                name: "Night King",
-                address: {
-                    street: "Beyond The Wall",
-                    country: "The North",
-                    postalCode: "Send a raven idiot!!"
-                }
-            }
+        
+        const queryParams = [];
+        for (let i in this.state.ingredients){
+            queryParams.push(encodeURIComponent(i) +  "=" + encodeURIComponent(this.state.ingredients[i]))
         }
-        axios.post('/orders.json',orders)
-        .then(response => 
-            this.setState({loading: false, ordered: false})
-            )
-        .catch(error => 
-            this.setState({loading: false, ordered: false})
-            )
+        queryParams.push('price=' + this.state.totalPrice )
+        const queryString = queryParams.join("&");
+        this.props.history.push({
+            pathname: '/checkout',
+            search: "?" + queryString
+
+        });
+
     }
   
 
